@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="uaifood2:jar">
+    <output-path>$PROJECT_DIR$/dist</output-path>
+    <root id="archive" name="trabalho2.jar">
+      <element id="module-output" name="trabalho2" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/dist/lib/AbsoluteLayout.jar" path-in-jar="/" />
+      <element id="dir-copy" path="$PROJECT_DIR$/src/imagens" />
+    </root>
+  </artifact>
+</component>
