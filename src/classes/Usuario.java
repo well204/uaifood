@@ -23,8 +23,7 @@ public abstract class Usuario {
         this.telefone = telefone;
     }
     
-    // função responsável por salvar a classe no banco de dados e decidir seu id
-    public abstract void init() throws IOException;
+    // Metodo Init removido
    
     public String getCpf() {
         return cpf;

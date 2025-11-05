@@ -1,19 +1,22 @@
 package classes;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import classes.ManipuladorArquivo;
 import java.util.Date;
+// Importar as novas classes de Strategy
+import classes.strategy.IDescontoStrategy;
+import classes.strategy.SemDesconto;
 
 public class Produto {
     private int codProduto;
     private String nome;
-    private float valor;
+    private float valor; // Este agora é o valor ORIGINAL/BASE
     private boolean alcoolico;
     private String categoria;
     private String descricao;
     private int diaDaPromocao;
-    
+
+    // Atributo do Padrão Strategy
+    private IDescontoStrategy descontoStrategy;
+
     public static String[] categorias = { "Carnes", "Japonesa", "Lanches", "Marmita", "Padarias", "Pizza", "Salgados", "Saudável", "Sorvetes", "Bebidas" };
 
     public Produto(int codProduto, String nome, float valor, boolean alcoolico, String categoria, String descricao, int diaDaPromocao) {
@@ -24,40 +27,39 @@ public class Produto {
         this.categoria = categoria;
         this.descricao = descricao;
         this.diaDaPromocao = diaDaPromocao;
-    }
-    
-    public void init() throws IOException {
-        int curr_id = 0;
-        
-        try {
-            ArrayList<Produto> produtos = ManipuladorArquivo.carregarProdutos();
-            
-            if (produtos.size() > 0)
-                curr_id = produtos.get(produtos.size()-1).getCodProduto()+1;
-        } catch(IOException ex) {
-            curr_id = 0;
-        }
-        
-        this.setCodProduto(curr_id);
-        ManipuladorArquivo.armazenar(this);
+
+        // Define uma estratégia padrão para garantir que nunca seja nulo
+        this.descontoStrategy = new SemDesconto();
     }
 
-    public float getValorAtual() {
-        // retorna valor atual processado e com desconto
-        int hoje = new Date().getDay();
-        return hoje == this.diaDaPromocao ? this.valor * 0.95f : this.valor;
+    /**
+     * Define a estratégia de desconto a ser usada por este produto.
+     * (Método adicionado para o Padrão Strategy)
+     */
+    public void setDescontoStrategy(IDescontoStrategy strategy) {
+        this.descontoStrategy = strategy;
     }
-    
+
+    /**
+     * Retorna o valor atual DELEGANDO o cálculo para a estratégia.
+     * (Método refatorado - Padrão Strategy)
+     */
+    public float getValorAtual() {
+        // Delega o cálculo para o objeto de estratégia
+        return this.descontoStrategy.calcularPreco(this.valor);
+    }
+
+    @Override
     public String toString() {
         return String.valueOf(this.codProduto) + ";"
                 + this.nome + ";"
-                + String.valueOf(this.valor) + ";"
+                + String.valueOf(this.valor) + ";" // Salva o valor original
                 + String.valueOf(this.alcoolico) + ";"
                 + this.categoria + ";"
                 + this.descricao + ";"
                 + String.valueOf(this.diaDaPromocao);
     }
-    
+
     public int getCodProduto() {
         return codProduto;
     }
@@ -65,7 +67,7 @@ public class Produto {
     public void setCodProduto(int codProduto) {
         this.codProduto = codProduto;
     }
-    
+
     public String getNome() {
         return nome;
     }
@@ -74,6 +76,9 @@ public class Produto {
         this.nome = nome;
     }
 
+    /**
+     * Este método agora retorna o valor BASE (sem desconto)
+     */
     public float getValor() {
         return valor;
     }
@@ -113,5 +118,4 @@ public class Produto {
     public void setDiaDaPromocao(int diaDaPromocao) {
         this.diaDaPromocao = diaDaPromocao;
     }
-    
 }

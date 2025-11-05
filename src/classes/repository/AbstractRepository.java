@@ -1,135 +1,99 @@
 package classes.repository;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
+import classes.util.FileHandler; // Importar a nova Facade
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List; // Importar List
 
 /**
- * Classe abstrata que implementa o padrão Template Method.
- * Ela define o "esqueleto" dos algoritmos de CRUD (carregar, editar, excluir)
- * **/
+ * Classe abstrata (Template Method) refatorada para usar a Facade FileHandler.
+ * Agora ela se concentra APENAS na lógica de template (o "como" editar/excluir)
+ * e delega o I/O de baixo nível para a facade.
+ */
 public abstract class AbstractRepository<T> {
 
+    // --- Métodos "Hook" Abstratos (implementados pelas subclasses) ---
 
-    //Retorna o nome do arquivo de banco de dados (ex: "clientes.txt").
     protected abstract String getEntityFileName();
-
-    //Converte uma entidade (Objeto) em sua representação em String para o arquivo.
     protected abstract String entityToString(T entity);
-
-
-    //Converte uma linha do arquivo (String) de volta em uma entidade (Objeto).
     protected abstract T stringToEntity(String line);
-
-    //Retorna o ID da entidade.
-
     protected abstract int getEntityId(T entity);
 
-    protected void limparArquivo(String path) throws IOException {
-        BufferedWriter buffWrite = new BufferedWriter(new FileWriter(path));
-        buffWrite.write("");
-        buffWrite.close();
-    }
-
-    protected String leitor(String path) throws IOException {
-        try (BufferedReader buffRead = new BufferedReader(new FileReader(path))) {
-            String linha = "";
-            String ans = "";
-            while (true) {
-                linha = buffRead.readLine();
-                if (linha != null) {
-                    ans += linha + "\n";
-                } else {
-                    break;
-                }
-            }
-            return ans;
-        } catch (IOException e) {
-            return ""; // Retorna string vazia se o arquivo não existir (primeira execução)
-        }
-    }
-
-    protected void escritor(String path, String linha) throws IOException {
-        String texto;
-        try {
-            texto = leitor(path) + linha; // Permanece com o que já havia no arquivo
-        } catch (IOException ex) {
-            texto = linha; // Arquivo novo
-        }
-
-        try (BufferedWriter buffWrite = new BufferedWriter(new FileWriter(path))) {
-            buffWrite.append(texto + "\n");
-        }
-    }
+    //
+    // Os métodos de I/O (leitor, escritor, limparArquivo) FORAM REMOVIDOS.
+    //
 
 
-     // Armazena (apenda) uma nova entidade ao final do arquivo.
+    // --- Métodos de CRUD (Template Methods e outros) ---
+
+    /**
+     * Armazena uma nova entidade.
+     * Agora usa o método 'appendLine' da facade.
+     */
     public void armazenar(T entity) throws IOException {
-        escritor(getEntityFileName(), entityToString(entity));
+        FileHandler.appendLine(getEntityFileName(), entityToString(entity));
     }
 
-
-     // Carrega todas as entidades do arquivo para uma lista.
-
+    /**
+     * Carrega todas as entidades.
+     * Agora usa o método 'readAllLines' da facade.
+     */
     public ArrayList<T> carregarTodos() throws IOException {
-        String texto = leitor(getEntityFileName());
+        List<String> linhas = FileHandler.readAllLines(getEntityFileName());
 
-        String[] linhas = texto.split("\n");
         ArrayList<T> entidades = new ArrayList<>();
-
-        for (int i = 0; i < linhas.length; i++) {
-            if (linhas[i].length() == 0) continue;
-            entidades.add(stringToEntity(linhas[i]));
+        for (String linha : linhas) {
+            // A verificação de linha vazia já é feita no FileHandler
+            entidades.add(stringToEntity(linha));
         }
         return entidades;
     }
 
     /**
      * TEMPLATE METHOD: Edita uma entidade.
-     * A lógica de (ler tudo, limpar, reescrever) é definida aqui.
+     * Refatorado para ser muito mais eficiente. Lê uma vez, escreve uma vez.
      */
     public void editar(T entity) throws IOException {
         String path = getEntityFileName();
-        String texto = leitor(path);
-        limparArquivo(path); // Limpa o arquivo
+        List<String> linhas = FileHandler.readAllLines(path);
+        ArrayList<String> novasLinhas = new ArrayList<>();
 
-        String[] linhas = texto.split("\n");
         int entityId = getEntityId(entity);
 
-        for (int i = 0; i < linhas.length; i++) {
-            if (linhas[i].length() == 0) continue;
+        for (String linha : linhas) {
+            T currEntity = stringToEntity(linha);
 
-            T currEntity = stringToEntity(linhas[i]);
-
-            if (entityId == getEntityId(currEntity))
-                this.armazenar(entity); // Armazena a entidade ATUALIZADA
-            else
-                this.armazenar(currEntity); // Mantém a entidade antiga
+            if (entityId == getEntityId(currEntity)) {
+                novasLinhas.add(entityToString(entity)); // Adiciona a entidade ATUALIZADA
+            } else {
+                novasLinhas.add(linha); // Adiciona a linha antiga inalterada
+            }
         }
+
+        // Sobrescreve o arquivo com a lista de linhas atualizada
+        FileHandler.writeAllLines(path, novasLinhas);
     }
 
     /**
      * TEMPLATE METHOD: Exclui uma entidade.
-     * A lógica de (ler tudo -> limpar -> reescrever) é definida aqui.
+     * Refatorado para ser muito mais eficiente. Lê uma vez, escreve uma vez.
      */
     public void excluir(T entity) throws IOException {
         String path = getEntityFileName();
-        String texto = leitor(path);
-        limparArquivo(path); // Limpa o arquivo
+        List<String> linhas = FileHandler.readAllLines(path);
+        ArrayList<String> novasLinhas = new ArrayList<>();
 
-        String[] linhas = texto.split("\n");
         int entityId = getEntityId(entity);
 
-        for (int i = 0; i < linhas.length; i++) {
-            if (linhas[i].length() == 0) continue;
+        for (String linha : linhas) {
+            T currEntity = stringToEntity(linha);
 
-            T currEntity = stringToEntity(linhas[i]);
-
-            if (entityId != getEntityId(currEntity))
-                this.armazenar(currEntity); // Armazena apenas se NÃO for a entidade para excluir
+            if (entityId != getEntityId(currEntity)) {
+                novasLinhas.add(linha); // Adiciona apenas se NÃO for a entidade para excluir
+            }
         }
+
+        // Sobrescreve o arquivo com a lista de linhas atualizada
+        FileHandler.writeAllLines(path, novasLinhas);
     }
 }
