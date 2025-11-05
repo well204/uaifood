@@ -16,6 +16,7 @@ import java.time.format.ResolverStyle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import classes.factory.MotoboyFactory; // Importação da factory
 
 /**
  *
@@ -241,17 +242,17 @@ public class CadastrarMotoboy extends javax.swing.JFrame {
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
@@ -265,17 +266,17 @@ public class CadastrarMotoboy extends javax.swing.JFrame {
 
     private void btnNovoMotoboyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNovoMotoboyActionPerformed
         // TODO add your handling code here:
-        
+
         String nome = txtNome.getText().trim(); // nao precisa checar
         String email = txtEmail.getText(); //precisa checar se ja um com email cadastrado
-        String cpf = txtCpf.getText().replaceAll("[\\D]", ""); // filtra os digitos 
+        String cpf = txtCpf.getText().replaceAll("[\\D]", ""); // filtra os digitos
         //precisa checar se já há um com cpf cadastrado
         String senha = String.valueOf(txtSenha.getPassword());// nao precisa checar
-        String telefone = txtTelefone.getText().replaceAll("[\\D]", ""); // filtra os digitos 
+        String telefone = txtTelefone.getText().replaceAll("[\\D]", ""); // filtra os digitos
         String dataDeNascimento = txtDataDeNascimento.getText(); // precisa checar
         String comecoExpediente = txtComecoExpediente.getText();// precisa checar
         String fimExpediente = txtFimExpediente.getText();// precisa checar
-        
+
         // Checar se os campos estão vazios
         if (CheckDados.ehVazio(nome,email,cpf,senha,telefone,dataDeNascimento,
                 comecoExpediente.replace(":", ""), fimExpediente.replace(":", ""))) {
@@ -287,31 +288,39 @@ public class CadastrarMotoboy extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Data de nascimento inválida!", "Erro", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+
         ////////// CHECAR OS HORARIOS DE EXPEDIENTE ///////
         if (CheckDados.checaExpediente(comecoExpediente, fimExpediente)){
             JOptionPane.showMessageDialog(null, "Horário de expediente inválida!", "Erro", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+
+        // --- BLOCO REATORADO ---
+        // Os dois try-catch originais foram combinados em um só.
         try {
-            ////////// CHECAR A PREEXISTENCIA DO CPF ///////
+            // 1. CHECAR A PREEXISTENCIA DO CPF
             if (CheckDados.checaCpf(cpf, "motoboy")){
                 JOptionPane.showMessageDialog(null, "CPF já existente, digite outro!", "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-        } catch (IOException ex) {
-            Logger.getLogger(CadastrarMotoboy.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        try {
-            Motoboy motoboy = new Motoboy(0, 0.1f, true, cpf, nome, email, senha, dataDeNascimento, telefone, comecoExpediente, fimExpediente);
-            motoboy.init();
+
+            // 2. Chamar a Factory (substitui new Motoboy() e motoboy.init())
+            // Nota: O código original usava 0.1f (10%) como comissão e 'true' para disponibilidade
+            float comissao = 0.1f;
+            boolean disponibilidade = true;
+            MotoboyFactory.createMotoboy(comissao, disponibilidade, cpf, nome, email, senha, dataDeNascimento, telefone, comecoExpediente, fimExpediente);
+
+            // 3. Dar sucesso
             JOptionPane.showMessageDialog(null, "Motoboy cadastrado com sucesso.", "Sucesso!", JOptionPane.PLAIN_MESSAGE);
             this.setVisible(false);
+
         } catch (IOException ex) {
+            // Pega erros tanto do checkCpf quanto do createMotoboy
+            // Logger.getLogger(CadastrarMotoboy.class.getName()).log(Level.SEVERE, null, ex); // Linha original
             JOptionPane.showMessageDialog(null, "Algo deu errado! O motoboy não foi cadastrado.", "Erro", JOptionPane.ERROR_MESSAGE);
         }
+        // --- FIM DO BLOCO REATORADO ---
+
     }//GEN-LAST:event_btnNovoMotoboyActionPerformed
 
     private void txtDataDeNascimentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDataDeNascimentoActionPerformed
@@ -333,7 +342,7 @@ public class CadastrarMotoboy extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {

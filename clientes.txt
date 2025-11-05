@@ -1,3 +1,2 @@
-
-0;Rua Fictícia, Casa Nº 467, Brasília, Distrito Federal;00000000000;admin;admin@admin;admin;01/01/2000;00000000000
+0;Rua Fictícia, Casa Nº 467, Brasília, Distrito Federal;00000000000;admin;admin@admin;123;01/01/2000;00000000000
 1;Rua das Flores;09928172727;well;well@test.com;123;08/11/1999;88999999999

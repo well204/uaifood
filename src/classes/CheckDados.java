@@ -15,7 +15,6 @@ import java.time.format.ResolverStyle;
 import javax.swing.JOptionPane;
 import classes.Motoboy;
 import classes.ManipuladorArquivo;
-import static classes.ManipuladorArquivo.stringToMotoboy;
 import java.io.IOException;
 import java.util.ArrayList;
 
