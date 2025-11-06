@@ -5,9 +5,8 @@ import classes.ManipuladorArquivo;
 import java.io.IOException;
 import java.util.ArrayList;
 
-/**
- * Padrão Factory: Centraliza a lógica de criação de Motoboys.
- */
+// padrão Factory: Centraliza a lógica de criação de motoboys
+
 public class MotoboyFactory {
 
     /**

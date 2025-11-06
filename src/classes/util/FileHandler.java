@@ -8,11 +8,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Padrão Facade: Esta classe atua como uma fachada para simplificar
- * as operações de I/O (leitura e escrita) em arquivos de texto.
- * Ela esconde a complexidade de BufferedReader/BufferedWriter.
- */
+
+//  Padrão Facade: Esta classe atua como uma fachada para simplificar
+
 public class FileHandler {
 
     /**

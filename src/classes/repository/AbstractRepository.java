@@ -5,11 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List; // Importar List
 
-/**
- * Classe abstrata (Template Method) refatorada para usar a Facade FileHandler.
- * Agora ela se concentra APENAS na lógica de template (o "como" editar/excluir)
- * e delega o I/O de baixo nível para a facade.
- */
+  //Classe abstrata (Template Method) refatorada para usar a Facade FileHandler.
+
 public abstract class AbstractRepository<T> {
 
     // --- Métodos "Hook" Abstratos (implementados pelas subclasses) ---
@@ -19,9 +16,9 @@ public abstract class AbstractRepository<T> {
     protected abstract T stringToEntity(String line);
     protected abstract int getEntityId(T entity);
 
-    //
-    // Os métodos de I/O (leitor, escritor, limparArquivo) FORAM REMOVIDOS.
-    //
+
+    // Os métodos de I/O (leitor, escritor, limparArquivo) foram removidos
+
 
 
     // --- Métodos de CRUD (Template Methods e outros) ---

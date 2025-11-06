@@ -9,3 +9,4 @@
 3;Royal Salute;899.0;true;Bebidas;Uísque escocês.;5
 4;Bolo de cenoura;20.0;false;Padarias;bolo delicioso de cenoura;1
 5;Pão;3.0;false;Padarias;Pão;0
+6;Geleia;2.0;false;Padarias;geleia;3

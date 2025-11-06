@@ -6,12 +6,8 @@ import classes.repository.ProdutoRepository;
 import java.io.IOException;
 import java.util.ArrayList;
 
-/**
- * Classe refatorada para atuar como um "Facade" simples.
- * Ela mantém os métodos estáticos (para não quebrar o resto do código),
- * mas delega toda a lógica de persistência para as classes de Repositório
- * apropriadas, que agora usam o padrão Template Method.
- */
+
+
 public class ManipuladorArquivo {
 
     // Instâncias estáticas dos repositórios
@@ -22,7 +18,6 @@ public class ManipuladorArquivo {
     //
     // Métodos de I/O (leitor, escritor, limpar) foram movidos para AbstractRepository
     // Métodos de conversão (stringTo...) foram movidos para os Repositórios concretos
-    //
 
     // --- CRUD Cliente ---
 

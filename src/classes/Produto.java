@@ -32,18 +32,14 @@ public class Produto {
         this.descontoStrategy = new SemDesconto();
     }
 
-    /**
-     * Define a estratégia de desconto a ser usada por este produto.
-     * (Método adicionado para o Padrão Strategy)
-     */
+
+     // Define a estratégia de desconto a ser usada por este produto
     public void setDescontoStrategy(IDescontoStrategy strategy) {
         this.descontoStrategy = strategy;
     }
 
-    /**
-     * Retorna o valor atual DELEGANDO o cálculo para a estratégia.
-     * (Método refatorado - Padrão Strategy)
-     */
+    // Retorna o valor atual DELEGANDO o cálculo para a estratégia
+
     public float getValorAtual() {
         // Delega o cálculo para o objeto de estratégia
         return this.descontoStrategy.calcularPreco(this.valor);
