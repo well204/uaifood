@@ -9,11 +9,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date; // Importar Date
 
+// padrão Factory: Centraliza a lógica de criação de produtos
+
+
 public class ProdutoFactory {
 
     public static Produto createProduto(String nome, float valor, boolean alcoolico, String categoria, String descricao, int diaDaPromocao) throws IOException {
-
-        // ... (lógica de geração de ID continua igual) ...
         int curr_id = 0;
         try {
             ArrayList<Produto> produtos = ManipuladorArquivo.carregarProdutos();

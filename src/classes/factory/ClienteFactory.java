@@ -5,11 +5,9 @@ import classes.ManipuladorArquivo;
 import java.io.IOException;
 import java.util.ArrayList;
 
-/**
- * Padrão Factory: Centraliza a lógica de criação de Clientes.
- * Agora, esta classe é a única responsável por gerar o ID e
- * salvar o novo cliente no banco de dados.
- */
+
+ // padrão Factory: Centraliza a lógica de criação de clientes
+
 public class ClienteFactory {
 
     /**
